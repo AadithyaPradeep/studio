@@ -17,7 +17,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "Figtree", "sans-serif"],
+        sans: ["Figtree", "sans-serif"],
         headline: ["var(--font-headline)", "Onest", "sans-serif"],
         code: ['monospace'],
       },

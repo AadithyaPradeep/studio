@@ -1,13 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter, Onest } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
-
-const fontSans = Inter({ 
-  subsets: ['latin'], 
-  variable: '--font-sans',
-});
 
 const fontHeadline = Onest({
   subsets: ['latin'],
@@ -28,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("font-sans antialiased", fontSans.variable, fontHeadline.variable)} suppressHydrationWarning>
+      <body className={cn("font-sans antialiased", fontHeadline.variable)} suppressHydrationWarning>
         {children}
         <Toaster />
       </body>
