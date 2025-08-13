@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Figtree, Onest } from 'next/font/google';
+import { Inter, Onest } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 
-const fontSans = Figtree({ 
+const fontSans = Inter({ 
   subsets: ['latin'], 
   variable: '--font-sans',
 });
