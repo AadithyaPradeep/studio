@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -25,11 +26,22 @@ export function useTasks() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const tasksData = snapshot.docs.map(doc => {
         const data = doc.data();
+        
+        let createdAtMillis: number;
+        if (data.createdAt instanceof Timestamp) {
+            createdAtMillis = data.createdAt.toMillis();
+        } else if (typeof data.createdAt === 'number') {
+            createdAtMillis = data.createdAt;
+        } else {
+            // Fallback for older or unexpected data formats
+            createdAtMillis = Date.now();
+        }
+
         return {
           id: doc.id,
           ...data,
           dueDate: data.dueDate ? (data.dueDate as Timestamp).toDate().toISOString() : null,
-          createdAt: (data.createdAt as Timestamp).toMillis(),
+          createdAt: createdAtMillis,
         } as Task;
       });
       setTasks(tasksData);
