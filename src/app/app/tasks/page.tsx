@@ -10,10 +10,12 @@ import TaskForm from "@/components/dayflow/task-form";
 import { isToday } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DayflowHeader from "@/components/dayflow/dayflow-header";
+import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
 
 export default function TasksPage() {
   const { 
-    tasks, 
+    tasks,
+    loading,
     addTask, 
     updateTask, 
     deleteTask, 
@@ -77,6 +79,10 @@ export default function TasksPage() {
         .map(task => task.category);
       return [...new Set(categories)];
     }, [tasks]);
+
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
 
   return (
       <div className="max-w-4xl mx-auto">
