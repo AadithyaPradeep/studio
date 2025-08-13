@@ -17,14 +17,14 @@ import { db } from '@/lib/firebase';
 import type { Task, Subtask } from '@/lib/types';
 import { v4 as uuidv4 } from "uuid";
 
-export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useTasks(initialTasks: Task[] = []) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [loading, setLoading] = useState(initialTasks.length === 0);
   
   useEffect(() => {
-    setLoading(true);
     const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      setLoading(true);
       const tasksData = snapshot.docs.map(doc => {
         const data = doc.data();
         
@@ -42,13 +42,17 @@ export function useTasks() {
           if (data.dueDate instanceof Timestamp) {
             dueDateISO = data.dueDate.toDate().toISOString();
           } else if (typeof data.dueDate === 'string') {
-            dueDateISO = data.dueDate;
+            dueDateISO = new Date(data.dueDate).toISOString();
           }
         }
 
         return {
           id: doc.id,
-          ...data,
+          title: data.title,
+          category: data.category,
+          isCompleted: data.isCompleted,
+          priority: data.priority,
+          subtasks: data.subtasks || [],
           dueDate: dueDateISO,
           createdAt: createdAtMillis,
         } as Task;
