@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
-import type { Task, Subtask } from "@/lib/types";
+import { useMemo } from "react";
+import type { Task } from "@/lib/types";
 import { useTasks } from "@/hooks/use-tasks";
 import TaskList from "@/components/dayflow/task-list";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TaskForm from "@/components/dayflow/task-form";
-import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
 import { isToday } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DayflowHeader from "@/components/dayflow/dayflow-header";
@@ -22,14 +20,7 @@ export default function TasksPage() {
     toggleComplete, 
     addSubtask, 
     deleteSubtask,
-    loading 
   } = useTasks();
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   // Task Handlers
   const handleAddTask = (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "subtasks">) => {
@@ -86,10 +77,6 @@ export default function TasksPage() {
         .map(task => task.category);
       return [...new Set(categories)];
     }, [tasks]);
-
-  if (!isMounted || loading) {
-    return <LoadingSkeleton />;
-  }
 
   return (
       <div className="max-w-4xl mx-auto">

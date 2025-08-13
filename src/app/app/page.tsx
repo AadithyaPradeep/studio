@@ -1,25 +1,15 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import type { Task } from "@/lib/types";
 import { useTasks } from "@/hooks/use-tasks";
-import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
 import SummaryHeader from "@/components/dayflow/summary-header";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 export default function HomePage() {
-  const { tasks, loading } = useTasks();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted || loading) {
-    return <LoadingSkeleton />;
-  }
+  const { tasks } = useTasks();
 
   return (
       <div className="max-w-4xl mx-auto">

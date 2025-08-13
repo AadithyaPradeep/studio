@@ -19,8 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     const q = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -45,10 +44,8 @@ export function useTasks() {
         } as Task;
       });
       setTasks(tasksData);
-      setLoading(false);
     }, (error) => {
       console.error("Error fetching tasks:", error);
-      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -78,8 +75,7 @@ export function useTasks() {
   const deleteTask = useCallback(async (id: string) => {
     try {
       await deleteDoc(doc(db, 'tasks', id));
-    } catch (error) {
-      console.error('Error deleting task: ', error);
+    } catch (error)      console.error('Error deleting task: ', error);
     }
   }, []);
 
@@ -133,5 +129,5 @@ export function useTasks() {
     });
   }, [tasks, updateTask]);
 
-  return { tasks, loading, addTask, updateTask, deleteTask, toggleComplete, addSubtask, deleteSubtask };
+  return { tasks, addTask, updateTask, deleteTask, toggleComplete, addSubtask, deleteSubtask };
 }
