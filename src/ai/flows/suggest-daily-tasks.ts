@@ -18,17 +18,29 @@ const SuggestDailyTasksInputSchema = z.object({
   previousTasks: z
     .array(z.string())
     .describe('A list of tasks from previous days.'),
+  availableCategories: z
+    .array(z.string())
+    .describe('A list of all available categories to choose from for new tasks.'),
 });
 export type SuggestDailyTasksInput = z.infer<typeof SuggestDailyTasksInputSchema>;
 
+const SuggestedTaskSchema = z.object({
+  title: z.string().describe('The title of the suggested task.'),
+  category: z.string().describe('The category for the suggested task.'),
+});
+
 const SuggestDailyTasksOutputSchema = z.object({
   suggestedTasks: z
-    .array(z.string())
-    .describe('A list of tasks suggested for the day.'),
+    .array(SuggestedTaskSchema)
+    .describe('A list of tasks suggested for the day, each with a title and a category.'),
 });
 export type SuggestDailyTasksOutput = z.infer<typeof SuggestDailyTasksOutputSchema>;
 
 export async function suggestDailyTasks(input: SuggestDailyTasksInput): Promise<SuggestDailyTasksOutput> {
+  // Handle the case where there's nothing to base suggestions on.
+  if (input.categories.length === 0 && input.previousTasks.length === 0) {
+    return { suggestedTasks: [] };
+  }
   return suggestDailyTasksFlow(input);
 }
 
@@ -36,12 +48,15 @@ const prompt = ai.definePrompt({
   name: 'suggestDailyTasksPrompt',
   input: {schema: SuggestDailyTasksInputSchema},
   output: {schema: SuggestDailyTasksOutputSchema},
-  prompt: `Based on the categories of tasks already planned for the day and a list of tasks from previous days, suggest tasks that should be included in the day's schedule.
+  prompt: `Based on the categories of tasks already planned for the day and a list of tasks from previous days, suggest new tasks that should be included in the day's schedule.
 
-Categories: {{categories}}
+For each suggested task, you must also provide a relevant category from the list of available categories.
+
+Today's Categories: {{categories}}
 Previous Tasks: {{previousTasks}}
+Available Categories for new tasks: {{availableCategories}}
 
-Suggest tasks that are relevant to the categories and similar to the previous tasks.`,
+Suggest tasks that are relevant to today's categories and similar to the previous tasks. Assign a suitable category to each new task.`,
 });
 
 const suggestDailyTasksFlow = ai.defineFlow(

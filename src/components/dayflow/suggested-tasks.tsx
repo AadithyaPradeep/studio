@@ -12,9 +12,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { getSuggestedTasks } from "@/app/actions";
+import { getSuggestedTasks, type SuggestedTask } from "@/app/actions";
 import type { Task } from "@/lib/types";
-import { TASK_CATEGORIES } from "./constants";
 import { useToast } from "@/hooks/use-toast";
 
 interface SuggestedTasksProps {
@@ -30,7 +29,7 @@ export default function SuggestedTasks({
 }: SuggestedTasksProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<SuggestedTask[]>([]);
   const { toast } = useToast();
 
   const fetchSuggestions = async () => {
@@ -41,17 +40,17 @@ export default function SuggestedTasks({
     setIsLoading(false);
   };
 
-  const handleAddSuggestion = (suggestion: string) => {
+  const handleAddSuggestion = (suggestion: SuggestedTask) => {
     onTaskCreate({
-      title: suggestion,
-      category: TASK_CATEGORIES[0], // Default category
+      title: suggestion.title,
+      category: suggestion.category,
       dueDate: null,
     });
     toast({
       title: "Task Added",
-      description: `"${suggestion}" has been added to your list.`,
+      description: `"${suggestion.title}" has been added to your list.`,
     });
-    setSuggestions(prev => prev.filter(s => s !== suggestion));
+    setSuggestions(prev => prev.filter(s => s.title !== suggestion.title));
   };
 
   return (
@@ -80,13 +79,13 @@ export default function SuggestedTasks({
                     className="flex items-center justify-between p-3 rounded-md bg-secondary/50"
                   >
                     <p className="text-sm font-medium text-secondary-foreground">
-                      {suggestion}
+                      {suggestion.title}
                     </p>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => handleAddSuggestion(suggestion)}
-                      aria-label={`Add task: ${suggestion}`}
+                      aria-label={`Add task: ${suggestion.title}`}
                     >
                       <PlusCircle className="h-4 w-4" />
                     </Button>
