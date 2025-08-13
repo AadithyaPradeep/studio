@@ -11,8 +11,6 @@ export function useTasks(initialTasks: Task[] = []) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // With useLocalStorage, the value is read on mount, so we can set loading to false.
-    // The delay was for simulating a fetch, which is no longer the case.
     setLoading(false);
   }, []);
 

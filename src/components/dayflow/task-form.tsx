@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Edit, Trash2, Flag } from "lucide-react";
+import { Calendar as CalendarIcon, Edit, Trash2, Flag, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,11 +44,27 @@ import { TASK_CATEGORIES } from "./constants";
 import type { Task } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 
+const timeSlots = Array.from({ length: 48 }, (_, i) => {
+    const hours = Math.floor(i / 2);
+    const minutes = i % 2 === 0 ? "00" : "30";
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+});
+
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters.").max(100),
   category: z.string({ required_error: "Please select a category." }),
   dueDate: z.date().nullable(),
+  startTime: z.string().nullable(),
+  endTime: z.string().nullable(),
   priority: z.enum(["low", "medium", "high", "none"]),
+}).refine(data => {
+    if (data.startTime && data.endTime) {
+        return data.startTime < data.endTime;
+    }
+    return true;
+}, {
+    message: "End time must be after start time.",
+    path: ["endTime"],
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -74,6 +90,8 @@ export default function TaskForm({
       title: task?.title || "",
       category: task?.category || "",
       dueDate: task?.dueDate ? new Date(task.dueDate) : null,
+      startTime: task?.startTime || null,
+      endTime: task?.endTime || null,
       priority: task?.priority || "none",
     },
   });
@@ -89,7 +107,7 @@ export default function TaskForm({
       onTaskSubmit(taskData);
     }
     setIsOpen(false);
-    form.reset({ title: "", category: "", dueDate: null, priority: "none" });
+    form.reset({ title: "", category: "", dueDate: null, startTime: null, endTime: null, priority: "none" });
   };
 
   const handleDateSelect = (
@@ -107,7 +125,7 @@ export default function TaskForm({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>{mode === "add" ? "Add New Task" : "Edit Task"}</DialogTitle>
         </DialogHeader>
@@ -133,7 +151,7 @@ export default function TaskForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
@@ -185,6 +203,58 @@ export default function TaskForm({
                         />
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+             <div className="grid grid-cols-2 gap-4">
+               <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Time</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <Clock className="mr-2 h-4 w-4" />
+                          <SelectValue placeholder="Select time" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {timeSlots.map(time => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Time</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <Clock className="mr-2 h-4 w-4" />
+                          <SelectValue placeholder="Select time" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {timeSlots.map(time => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -9,6 +9,8 @@ export interface Task {
   title: string;
   category: string;
   dueDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
   isCompleted: boolean;
   createdAt: number;
   priority: "low" | "medium" | "high" | "none";

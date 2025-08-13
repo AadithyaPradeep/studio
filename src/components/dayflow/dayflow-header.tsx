@@ -4,7 +4,7 @@ import SuggestedTasks from "@/components/dayflow/suggested-tasks";
 import type { Task } from "@/lib/types";
 
 interface DayflowHeaderProps {
-  onTaskCreate: (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "priority" | "dueDate">) => void;
+  onTaskCreate: (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "subtasks">) => void;
   previousTaskTitles: string[];
   todaysCategories: string[];
 }
