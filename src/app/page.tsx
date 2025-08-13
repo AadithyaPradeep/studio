@@ -90,10 +90,10 @@ export default function Home() {
       />
       <main className="flex-grow container mx-auto px-4 py-8 md:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-3">
-              <ListTodo className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl md:text-3xl font-bold font-headline">
+              <ListTodo className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl md:text-4xl font-bold font-headline">
                 Today's Flow
               </h1>
             </div>
@@ -101,8 +101,8 @@ export default function Home() {
               mode="add" 
               onTaskSubmit={handleAddTask}
             >
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
+              <Button size="lg">
+                <PlusCircle className="mr-2 h-5 w-5" />
                 Add Task
               </Button>
             </TaskForm>

@@ -25,8 +25,8 @@ export default function TaskItem({
 }: TaskItemProps) {
   return (
     <Card className={cn(
-      "w-full transition-all duration-300 ease-in-out",
-      task.isCompleted ? "bg-card/50" : "bg-card"
+      "w-full transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1",
+      task.isCompleted ? "bg-card/60 opacity-70" : "bg-card"
     )}>
       <CardContent className="p-4 flex items-center gap-4">
         <Checkbox
@@ -34,26 +34,26 @@ export default function TaskItem({
           checked={task.isCompleted}
           onCheckedChange={() => onToggleComplete(task.id)}
           aria-label={`Mark task "${task.title}" as ${task.isCompleted ? 'incomplete' : 'complete'}`}
-          className="h-5 w-5"
+          className="h-6 w-6 rounded-full"
         />
         <div className="flex-grow grid gap-1">
           <label 
             htmlFor={`task-${task.id}`}
             className={cn(
-              "font-medium leading-none cursor-pointer",
+              "font-semibold text-lg leading-none cursor-pointer",
               task.isCompleted && "line-through text-muted-foreground"
             )}
           >
             {task.title}
           </label>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
-              <Tag className="h-3 w-3" />
-              <Badge variant="secondary">{task.category}</Badge>
+              <Tag className="h-4 w-4" />
+              <Badge variant="secondary" className="rounded-full">{task.category}</Badge>
             </div>
             {task.dueDate && (
               <div className="flex items-center gap-1.5">
-                <Calendar className="h-3 w-3" />
+                <Calendar className="h-4 w-4" />
                 <span>{format(new Date(task.dueDate), "MMM d, yyyy")}</span>
               </div>
             )}
@@ -67,7 +67,7 @@ export default function TaskItem({
             onDelete={onDeleteTask}
           >
             <Button variant="ghost" size="icon" aria-label={`Edit task: ${task.title}`}>
-              <Edit className="h-4 w-4" />
+              <Edit className="h-5 w-5" />
             </Button>
           </TaskForm>
         </div>
