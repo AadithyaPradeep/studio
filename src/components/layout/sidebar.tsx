@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BrainCircuit, CheckSquare, Settings, User } from "lucide-react";
+import { BrainCircuit, CheckSquare, Settings, User, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -16,7 +16,8 @@ import {
 import { Button } from "../ui/button";
 
 const navItems = [
-  { href: "/app", icon: CheckSquare, label: "Tasks" },
+  { href: "/app", icon: Home, label: "Home" },
+  { href: "/app/tasks", icon: CheckSquare, label: "Tasks" },
   { href: "/app/settings", icon: Settings, label: "Settings" },
 ];
 
