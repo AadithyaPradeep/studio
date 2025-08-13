@@ -3,6 +3,7 @@
 
 import { motion, useAnimation } from "framer-motion";
 import { useMemo, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface ProgressMascotProps {
   progress: number; // 0-100
@@ -18,7 +19,10 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
   }, [progress]);
 
   useEffect(() => {
-    controls.start(mascotState);
+    // Give a slight delay to the initial animation for a smoother entry
+    setTimeout(() => {
+      controls.start(mascotState);
+    }, 300);
   }, [mascotState, controls]);
   
   const handleInteraction = async () => {
@@ -27,63 +31,115 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
   };
   
   const containerVariants = {
-    idle: { y: 0, transition: { duration: 0.8, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" } },
-    focused: { y: [0, -5, 0], transition: { duration: 1.5, ease: "easeInOut", repeat: Infinity } },
-    celebrating: { 
-      y: [0, -20, 0, -20, 0], 
-      transition: { duration: 1.5, ease: "easeInOut" } 
+    initial: { opacity: 0, scale: 0.8 },
+    idle: { 
+      opacity: 1,
+      scale: 1,
+      y: [0, -8, 0], 
+      transition: { duration: 3, ease: "easeInOut", repeat: Infinity } 
     },
-    wink: {
-      scale: [1, 0.95, 1],
-      transition: { duration: 0.5 }
-    }
-  };
-
-  const eyeVariants = {
-    idle: { d: "M 20 32 C 22 28, 26 28, 28 32 M 36 32 C 38 28, 42 28, 44 32", transition: { duration: 0.3 } },
-    focused: { d: "M 18 30 C 22 34, 26 34, 30 30 M 34 30 C 38 34, 42 34, 46 30", transition: { duration: 0.3 } },
-    celebrating: { d: "M 18 32 C 22 26, 26 26, 30 32 M 34 32 C 38 26, 42 26, 46 32", transition: { duration: 0.3 } },
-    wink: { 
-      d: "M 18 32 C 22 28, 26 28, 28 32 M 36 31 C 40 31, 40 31, 44 31",
-      transition: { duration: 0.1, delay: 0.1 } 
-    }
+    focused: { 
+      opacity: 1,
+      scale: 1.05,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" } 
+    },
+    celebrating: { 
+      opacity: 1,
+      scale: 1,
+      y: [0, -25, 0, -25, 0], 
+      transition: { y: { duration: 1.2, ease: "easeInOut" }, scale: {duration: 0.5} } 
+    },
   };
   
+  const eyeVariants = {
+    initial: {
+      d: "M 24,32 C 24,28 30,28 30,32 C 30,36 24,36 24,32 Z M 40,32 C 40,28 46,28 46,32 C 46,36 40,36 40,32 Z",
+    },
+    idle: (i: number) => ({
+      d: "M 24,32 C 24,28 30,28 30,32 C 30,36 24,36 24,32 Z M 40,32 C 40,28 46,28 46,32 C 46,36 40,36 40,32 Z",
+      transition: { duration: 0.5, delay: i * 0.05 },
+    }),
+    wink: (i: number) => ({
+      d: i === 1
+        ? "M 24,32 C 24,28 30,28 30,32 C 30,36 24,36 24,32 Z M 40,33 C 42,31 44,31 46,33" // Left eye open, right eye winks
+        : "M 24,33 C 26,31 28,31 30,33 M 40,32 C 40,28 46,28 46,32 C 46,36 40,36 40,32 Z", // Right eye open, left eye winks
+      transition: { duration: 0.15, ease: "easeInOut" },
+    }),
+    focused: (i: number) => ({
+      d: "M 22,32 C 22,27 32,27 32,32 C 32,37 22,37 22,32 Z M 38,32 C 38,27 48,27 48,32 C 48,37 38,37 38,32 Z",
+      transition: { duration: 0.4, ease: "easeOut", delay: i * 0.05 },
+    }),
+    celebrating: (i: number) => ({
+      d: "M 22,30 C 26,26 30,26 34,30 M 38,30 C 42,26 46,26 50,30",
+      transition: { duration: 0.4, ease: "easeOut", delay: i * 0.05 },
+    }),
+  };
+
+  const pupilVariants = {
+    initial: { scale: 0, x: 0, y: 0 },
+    idle: { scale: 1, x: 0, y: 0, transition: { duration: 0.4, delay: 0.1 } },
+    focused: { scale: 1.15, x: 0, y: 0, transition: { duration: 0.4 } },
+    celebrating: { scale: 0, y: -2, transition: { duration: 0.3 } },
+    wink: { scale: 0, transition: { duration: 0.1 } },
+  };
+
   return (
     <div className="flex flex-col items-center gap-4">
       <motion.div
         className="w-48 h-48 relative cursor-pointer"
         onClick={handleInteraction}
         variants={containerVariants}
+        initial="initial"
         animate={controls}
-        initial="idle"
       >
-        <div className="w-full h-full">
-            <svg viewBox="0 0 64 64" width="192" height="192" fill="none">
+        <div className="w-full h-full" style={{ perspective: "1000px" }}>
+            <svg viewBox="0 0 70 70" width="192" height="192" fill="none">
+              <defs>
+                <radialGradient id="irisGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                  <stop offset="0%" style={{ stopColor: "#5E9EFF", stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: "#4A78D1", stopOpacity: 1 }} />
+                </radialGradient>
+                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                    <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+              </defs>
+
               {/* Body */}
-              <path d="M32 48C38.6274 48 44 53.3726 44 60H20C20 53.3726 25.3726 48 32 48Z" fill="#A3A9F4"/>
+              <motion.circle 
+                cx="35" cy="35" r="30" 
+                fill="#D8E7FF"
+                stroke="#AABEE4"
+                strokeWidth="2"
+              />
               
-              {/* Head */}
-              <path d="M12 36C12 24.9543 20.9543 16 32 16C43.0457 16 52 24.9543 52 36V48H12V36Z" fill="#3D457F"/>
-              
-              {/* Ears */}
-              <path d="M12 36C12 31.5817 15.5817 28 20 28L14 18L12 36Z" fill="#3D457F"/>
-              <path d="M52 36C52 31.5817 48.4183 28 44 28L50 18L52 36Z" fill="#3D457F"/>
-              <path d="M16 28.5C16 25.4624 18.4624 23 21.5 23L15 15L16 28.5Z" fill="#A3A9F4"/>
-              <path d="M48 28.5C48 25.4624 45.5376 23 42.5 23L49 15L48 28.5Z" fill="#A3A9F4"/>
-              
-              {/* Face Screen */}
-              <path d="M16 46V36C16 27.1634 23.1634 20 32 20C40.8366 20 48 27.1634 48 36V46H16Z" fill="#1C1C3A"/>
-              
-              {/* Eyes */}
-              <motion.path
-                  stroke="#80F6E8"
-                  strokeWidth="3"
+              {/* Face Content */}
+              <g>
+                {/* Eyes */}
+                <motion.path
+                  stroke="#3D457F"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   variants={eyeVariants}
+                  custom={1}
                   animate={controls}
-              />
+                />
+                 {/* Pupils - with depth */}
+                 <g>
+                    <motion.circle cx="27.5" cy="32" r="4.5" fill="url(#irisGradient)" variants={pupilVariants} animate={controls} />
+                    <motion.circle cx="26.5" cy="31" r="1.5" fill="white" fillOpacity="0.8" variants={pupilVariants} animate={controls} />
+                 </g>
+                 <g>
+                    <motion.circle cx="43.5" cy="32" r="4.5" fill="url(#irisGradient)" variants={pupilVariants} animate={controls} />
+                    <motion.circle cx="42.5" cy="31" r="1.5" fill="white" fillOpacity="0.8" variants={pupilVariants} animate={controls} />
+                 </g>
+              </g>
+
             </svg>
         </div>
       </motion.div>
