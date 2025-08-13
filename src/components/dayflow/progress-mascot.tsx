@@ -1,7 +1,8 @@
+
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useMemo } from "react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface ProgressMascotProps {
@@ -9,66 +10,56 @@ interface ProgressMascotProps {
 }
 
 export default function ProgressMascot({ progress }: ProgressMascotProps) {
+  const controls = useAnimation();
+
   const mascotState = useMemo(() => {
     if (progress < 1) return "idle";
     if (progress < 100) return "focused";
     return "celebrating";
   }, [progress]);
 
-  const mascotVariants = {
-    idle: { scale: 1, transition: { duration: 0.5 } },
-    focused: { scale: 1.05, transition: { duration: 0.5 } },
-    celebrating: { scale: 1.1, transition: { duration: 0.5 } },
+  useEffect(() => {
+    controls.start(mascotState);
+  }, [mascotState, controls]);
+  
+  const handleInteraction = () => {
+    controls.start("wink");
+    setTimeout(() => {
+      controls.start(mascotState);
+    }, 1000);
   };
 
-  const eyeVariants = {
-    idle: {
-      d: "M 8 18 Q 24 18 40 18", // Gentle curve
-      transition: { duration: 2, repeat: Infinity, ease: "easeInOut", repeatType: "mirror" }
-    },
-    focused: {
-      d: "M 8 16 Q 24 20 40 16", // Focused straight line
-      transition: { duration: 0.5, ease: "easeOut" }
-    },
-    celebrating: {
-      d: "M 8 12 Q 24 28 40 12", // Happy U shape
-      transition: { duration: 0.8, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" }
-    },
+  const faceVariants = {
+    idle: { scale: 1, y: 0 },
+    focused: { scale: 1.05, y: -5 },
+    celebrating: { scale: 1.1, y: [0, -15, 0], transition: { y: { repeat: Infinity, duration: 1, ease: "easeInOut" } } },
+    wink: { scale: 1.1, transition: { duration: 0.2 } },
   };
+
+  const mouthVariants = {
+    idle: { d: "M 18 32 Q 24 34 30 32" }, // Gentle smile
+    focused: { d: "M 18 32 L 30 32" }, // Flat line
+    celebrating: { d: "M 16 30 Q 24 40 32 30" }, // Big grin
+    wink: { d: "M 18 32 Q 24 36 30 32" },
+  };
+  
+  const eyeVariants = {
+    idle: { scaleY: 1 },
+    wink: { scaleY: [1, 0.1, 1], transition: { duration: 0.5, times: [0, 0.5, 1] } },
+  }
 
   const pupilVariants = {
     idle: {
-        cx: 24,
-        cy: 24,
-        transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+      x: [0, 2, -2, 0],
+      y: [0, -1, 1, 0],
+      transition: { duration: 8, repeat: Infinity, ease: "easeInOut" }
     },
-    focused: {
-        cx: 24,
-        cy: 22,
-        transition: { duration: 0.5, ease: "easeOut" }
-    },
-    celebrating: {
-        cx: 24,
-        cy: 20,
-        transition: { duration: 0.8, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" }
-    }
-  }
-
-  const particleVariants = {
-    animate: (i: number) => ({
-      transform: [
-        `rotate(${i * 45}deg) translateX(55px) rotate(-${i * 45}deg)`,
-        `rotate(${i * 45 + 360}deg) translateX(55px) rotate(-${i * 45 + 360}deg)`
-      ],
-      transition: {
-        duration: 10 + i * 2,
-        ease: "linear",
-        repeat: Infinity,
-      },
-    }),
+    focused: { x: 0, y: 0 },
+    celebrating: { x: 0, y: 0 },
+    wink: { x: 0, y: 0 },
   };
 
-  const celebrationSparkles = {
+  const particleVariants = {
     hidden: { scale: 0, opacity: 0 },
     visible: (i: number) => ({
       scale: [0, 1.2, 0],
@@ -84,34 +75,13 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="w-48 h-48 relative">
+      <div className="w-48 h-48 relative cursor-pointer" onClick={handleInteraction}>
         <motion.div
           className="w-full h-full flex items-center justify-center"
-          variants={mascotVariants}
-          animate={mascotState}
+          variants={faceVariants}
+          initial="idle"
+          animate={controls}
         >
-          {/* Particles */}
-          <AnimatePresence>
-            {(mascotState === 'focused' || mascotState === 'celebrating') && (
-              <motion.div className="absolute w-full h-full">
-                {[...Array(8)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    custom={i}
-                    variants={particleVariants}
-                    animate="animate"
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                  >
-                     <div className={cn(
-                         "w-2 h-2 rounded-full",
-                         mascotState === "celebrating" ? "bg-primary" : "bg-cyan-400"
-                     )}/>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
           {/* Main Face */}
           <div className="relative w-28 h-28">
             <motion.div 
@@ -124,20 +94,37 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
                 }}
             />
             
-            {/* Eye */}
+            {/* Eyes and Mouth */}
             <svg viewBox="0 0 48 48" className="absolute inset-0 w-full h-full">
-                 <motion.circle 
-                    cx="24" cy="24" r="14" fill="white"
-                 />
-                 <motion.circle
-                    variants={pupilVariants}
-                    animate={mascotState}
-                    cx="24" cy="24" r="6" fill="hsl(var(--foreground))"
-                 />
-                 {/* Eye glare */}
-                 <motion.circle
-                    cx="28" cy="20" r="2" fill="white" opacity="0.8"
-                    animate={{ y: [20, 21, 20], transition: {duration: 3, repeat: Infinity, ease: "easeInOut"}}}
+                 <motion.g animate={controls}>
+                    {/* Left Eye */}
+                    <motion.g variants={eyeVariants}>
+                      <circle cx="16" cy="22" r="5" fill="white" />
+                      <motion.circle 
+                          variants={pupilVariants}
+                          cx="16" cy="22" r="2.5" fill="hsl(var(--foreground))"
+                      />
+                    </motion.g>
+
+                    {/* Right Eye */}
+                    <motion.g variants={eyeVariants}>
+                      <circle cx="32" cy="22" r="5" fill="white" />
+                      <motion.circle 
+                          variants={pupilVariants}
+                          cx="32" cy="22" r="2.5" fill="hsl(var(--foreground))"
+                      />
+                    </motion.g>
+                 </motion.g>
+                 
+                 <motion.path
+                    d="M 18 32 Q 24 34 30 32"
+                    stroke="hsl(var(--foreground))"
+                    strokeWidth="1.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    variants={mouthVariants}
+                    initial="idle"
+                    animate={controls}
                  />
             </svg>
           </div>
@@ -149,7 +136,7 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
                       <motion.div
                           key={i}
                           custom={i}
-                          variants={celebrationSparkles}
+                          variants={particleVariants}
                           initial="hidden"
                           animate="visible"
                           className="absolute w-3 h-3 bg-primary/80 rounded-full"
