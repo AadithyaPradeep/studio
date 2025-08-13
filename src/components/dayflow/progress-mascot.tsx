@@ -1,8 +1,8 @@
-
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 interface ProgressMascotProps {
   progress: number; // 0-100
