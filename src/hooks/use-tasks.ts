@@ -75,7 +75,8 @@ export function useTasks() {
   const deleteTask = useCallback(async (id: string) => {
     try {
       await deleteDoc(doc(db, 'tasks', id));
-    } catch (error)      console.error('Error deleting task: ', error);
+    } catch (error) {
+      console.error('Error deleting task: ', error);
     }
   }, []);
 
