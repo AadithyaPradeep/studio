@@ -173,17 +173,15 @@ export default function TaskForm({
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            <span className="truncate">
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                            </span>
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0" align="start" side="bottom">
                         <Calendar
                           mode="single"
                           selected={field.value ?? undefined}
