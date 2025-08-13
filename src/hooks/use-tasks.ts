@@ -11,11 +11,9 @@ export function useTasks(initialTasks: Task[] = []) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading for better UX on initial load with local storage
-    const timer = setTimeout(() => {
-        setLoading(false);
-    }, 250);
-    return () => clearTimeout(timer);
+    // With useLocalStorage, the value is read on mount, so we can set loading to false.
+    // The delay was for simulating a fetch, which is no longer the case.
+    setLoading(false);
   }, []);
 
   const addTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt'>) => {
