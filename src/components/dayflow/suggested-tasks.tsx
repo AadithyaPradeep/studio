@@ -17,7 +17,7 @@ import type { Task } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
 interface SuggestedTasksProps {
-  onTaskCreate: (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "priority">) => void;
+  onTaskCreate: (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "priority" | "dueDate">) => void;
   previousTaskTitles: string[];
   todaysCategories: string[];
 }
@@ -44,7 +44,7 @@ export default function SuggestedTasks({
     onTaskCreate({
       title: suggestion.title,
       category: suggestion.category,
-      dueDate: null,
+      subtasks: [],
     });
     toast({
       title: "Task Added",
