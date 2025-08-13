@@ -66,7 +66,7 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
       initial: { opacity: 0.5, scaleX: 1 },
       animate: {
           scaleX: [1, 0.95, 1],
-          opacity: [0.5, 0.3, 0.5],
+          opacity: [0.3, 0.2, 0.3],
           transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
       }
   }
@@ -81,7 +81,7 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
         {/* Main Body */}
         <div className="absolute inset-0 flex items-center justify-center">
             <div 
-                className="w-28 h-24 rounded-[50%_50%_45%_55%/60%_70%_30%_40%] bg-primary/80 shadow-lg"
+                className="w-28 h-24 rounded-[50%_50%_45%_55%/60%_70%_30%_40%] bg-primary/80"
                 style={{ filter: 'blur(1px)'}}
             />
         </div>
@@ -113,10 +113,10 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
               variants={eyesVariants}
               animate={mascotState}
             >
-              <div className="w-5 h-6 rounded-full bg-white flex items-center justify-center">
+              <div className="w-5 h-6 rounded-full bg-white flex items-center justify-center shadow-inner">
                   <div className="w-2 h-2 rounded-full bg-foreground" />
               </div>
-              <div className="w-5 h-6 rounded-full bg-white flex items-center justify-center">
+              <div className="w-5 h-6 rounded-full bg-white flex items-center justify-center shadow-inner">
                   <div className="w-2 h-2 rounded-full bg-foreground" />
               </div>
             </motion.div>
