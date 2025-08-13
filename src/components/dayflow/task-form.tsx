@@ -42,6 +42,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { TASK_CATEGORIES } from "./constants";
 import type { Task } from "@/lib/types";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters.").max(100),
