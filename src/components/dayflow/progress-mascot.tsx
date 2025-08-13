@@ -19,128 +19,147 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
   }, [progress]);
 
   useEffect(() => {
-    // Give a slight delay to the initial animation for a smoother entry
-    setTimeout(() => {
-      controls.start(mascotState);
-    }, 300);
+    controls.start("initial").then(() => controls.start(mascotState));
   }, [mascotState, controls]);
-  
-  const handleInteraction = async () => {
-    await controls.start("wink");
-    controls.start(mascotState);
-  };
   
   const containerVariants = {
     initial: { opacity: 0, scale: 0.8 },
     idle: { 
-      opacity: 1,
-      scale: 1,
-      y: [0, -8, 0], 
-      transition: { duration: 3, ease: "easeInOut", repeat: Infinity } 
+        opacity: 1, 
+        scale: 1,
+        transition: { duration: 0.8, ease: "backOut" }
     },
     focused: { 
-      opacity: 1,
-      scale: 1.05,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" } 
+        opacity: 1, 
+        scale: 1.05,
+        transition: { duration: 0.5, ease: "easeOut" } 
     },
     celebrating: { 
+        opacity: 1, 
+        scale: 1.1,
+        transition: { duration: 0.5, ease: "backOut" } 
+    },
+  };
+
+  const eyeVariants = {
+    initial: { 
+        pathLength: 0, 
+        opacity: 0 
+    },
+    idle: {
+      d: "M 8,12 C 10,14 14,14 16,12",
+      pathLength: 1,
       opacity: 1,
-      scale: 1,
-      y: [0, -25, 0, -25, 0], 
-      transition: { y: { duration: 1.2, ease: "easeInOut" }, scale: {duration: 0.5} } 
+      transition: { pathLength: {duration: 0.5, delay: 0.3}, opacity: {duration: 0.1, delay: 0.3}}
+    },
+    focused: {
+      d: "M 8,13 C 10,13 14,13 16,13",
+      transition: { duration: 0.3, ease: "easeInOut" },
+    },
+    celebrating: {
+      d: "M 8,10 C 10,14 14,14 16,10",
+      transition: { duration: 0.4, ease: "backOut" },
     },
   };
   
-  const eyeVariants = {
+  const particleVariants = {
     initial: {
-      d: "M 24,32 C 24,28 30,28 30,32 C 30,36 24,36 24,32 Z M 40,32 C 40,28 46,28 46,32 C 46,36 40,36 40,32 Z",
+        scale: 0,
+        opacity: 0
     },
-    idle: (i: number) => ({
-      d: "M 24,32 C 24,28 30,28 30,32 C 30,36 24,36 24,32 Z M 40,32 C 40,28 46,28 46,32 C 46,36 40,36 40,32 Z",
-      transition: { duration: 0.5, delay: i * 0.05 },
+    idle: (i:number) => ({
+        scale: 1,
+        opacity: 1,
+        rotate: 360,
+        transition: {
+            delay: 0.5 + i * 0.1,
+            duration: 2 + i * 0.5,
+            ease: "linear",
+            repeat: Infinity,
+            repeatType: 'loop',
+        }
     }),
-    wink: (i: number) => ({
-      d: i === 1
-        ? "M 24,32 C 24,28 30,28 30,32 C 30,36 24,36 24,32 Z M 40,33 C 42,31 44,31 46,33" // Left eye open, right eye winks
-        : "M 24,33 C 26,31 28,31 30,33 M 40,32 C 40,28 46,28 46,32 C 46,36 40,36 40,32 Z", // Right eye open, left eye winks
-      transition: { duration: 0.15, ease: "easeInOut" },
+    focused: (i:number) => ({
+        scale: [1, 1.2, 1],
+        opacity: 1,
+        rotate: 720,
+        transition: {
+            delay: i * 0.05,
+            duration: 1 + i * 0.2,
+            ease: "linear",
+            repeat: Infinity,
+            repeatType: 'loop',
+        }
     }),
-    focused: (i: number) => ({
-      d: "M 22,32 C 22,27 32,27 32,32 C 32,37 22,37 22,32 Z M 38,32 C 38,27 48,27 48,32 C 48,37 38,37 38,32 Z",
-      transition: { duration: 0.4, ease: "easeOut", delay: i * 0.05 },
-    }),
-    celebrating: (i: number) => ({
-      d: "M 22,30 C 26,26 30,26 34,30 M 38,30 C 42,26 46,26 50,30",
-      transition: { duration: 0.4, ease: "easeOut", delay: i * 0.05 },
-    }),
-  };
+    celebrating: {
+        scale: [1, 2, 0],
+        opacity: [1, 1, 0],
+        transition: {
+            duration: 0.8,
+            ease: "circOut",
+        }
+    }
+  }
 
-  const pupilVariants = {
-    initial: { scale: 0, x: 0, y: 0 },
-    idle: { scale: 1, x: 0, y: 0, transition: { duration: 0.4, delay: 0.1 } },
-    focused: { scale: 1.15, x: 0, y: 0, transition: { duration: 0.4 } },
-    celebrating: { scale: 0, y: -2, transition: { duration: 0.3 } },
-    wink: { scale: 0, transition: { duration: 0.1 } },
-  };
+  const particles = [
+      { cx: 50, cy: 15, size: 6 },
+      { cx: 80, cy: 40, size: 8 },
+      { cx: 30, cy: 75, size: 7 },
+  ]
 
   return (
     <div className="flex flex-col items-center gap-4">
       <motion.div
-        className="w-48 h-48 relative cursor-pointer"
-        onClick={handleInteraction}
+        className="w-48 h-48 relative"
         variants={containerVariants}
         initial="initial"
         animate={controls}
       >
         <div className="w-full h-full" style={{ perspective: "1000px" }}>
-            <svg viewBox="0 0 70 70" width="192" height="192" fill="none">
-              <defs>
-                <radialGradient id="irisGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                  <stop offset="0%" style={{ stopColor: "#5E9EFF", stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: "#4A78D1", stopOpacity: 1 }} />
-                </radialGradient>
-                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                    <feMerge>
-                        <feMergeNode in="coloredBlur" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                </filter>
-              </defs>
+            <motion.div 
+              className="w-full h-full rounded-full bg-primary/20 relative flex justify-center items-center shadow-inner"
+            >
+              <div className="flex gap-4">
+                {/* Left Eye */}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <motion.path 
+                        variants={eyeVariants}
+                        stroke="hsl(var(--primary))"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                    />
+                </svg>
+                {/* Right Eye */}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <motion.path 
+                        variants={eyeVariants}
+                        stroke="hsl(var(--primary))"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                    />
+                </svg>
+              </div>
 
-              {/* Body */}
-              <motion.circle 
-                cx="35" cy="35" r="30" 
-                fill="#D8E7FF"
-                stroke="#AABEE4"
-                strokeWidth="2"
-              />
-              
-              {/* Face Content */}
-              <g>
-                {/* Eyes */}
-                <motion.path
-                  stroke="#3D457F"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  variants={eyeVariants}
-                  custom={1}
-                  animate={controls}
-                />
-                 {/* Pupils - with depth */}
-                 <g>
-                    <motion.circle cx="27.5" cy="32" r="4.5" fill="url(#irisGradient)" variants={pupilVariants} animate={controls} />
-                    <motion.circle cx="26.5" cy="31" r="1.5" fill="white" fillOpacity="0.8" variants={pupilVariants} animate={controls} />
-                 </g>
-                 <g>
-                    <motion.circle cx="43.5" cy="32" r="4.5" fill="url(#irisGradient)" variants={pupilVariants} animate={controls} />
-                    <motion.circle cx="42.5" cy="31" r="1.5" fill="white" fillOpacity="0.8" variants={pupilVariants} animate={controls} />
-                 </g>
-              </g>
-
-            </svg>
+            </motion.div>
+             {/* Particles */}
+             <div className="absolute inset-0">
+                {particles.map((p, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute rounded-full bg-primary"
+                        style={{
+                            width: p.size,
+                            height: p.size,
+                            left: `${p.cx}%`,
+                            top: `${p.cy}%`,
+                            translateX: "-50%",
+                            translateY: "-50%",
+                        }}
+                        custom={i}
+                        variants={particleVariants}
+                    />
+                ))}
+             </div>
         </div>
       </motion.div>
 
