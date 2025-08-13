@@ -14,3 +14,9 @@ export interface Task {
   priority: "low" | "medium" | "high" | "none";
   subtasks: Subtask[];
 }
+
+export interface Habit {
+  id: string;
+  title: string;
+  completions: Record<string, boolean>;
+}
