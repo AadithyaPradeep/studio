@@ -32,14 +32,22 @@ export function useTasks() {
         } else if (typeof data.createdAt === 'number') {
             createdAtMillis = data.createdAt;
         } else {
-            // Fallback for older or unexpected data formats
             createdAtMillis = Date.now();
+        }
+
+        let dueDateISO: string | null = null;
+        if (data.dueDate) {
+          if (data.dueDate instanceof Timestamp) {
+            dueDateISO = data.dueDate.toDate().toISOString();
+          } else if (typeof data.dueDate === 'string') {
+            dueDateISO = data.dueDate;
+          }
         }
 
         return {
           id: doc.id,
           ...data,
-          dueDate: data.dueDate ? (data.dueDate as Timestamp).toDate().toISOString() : null,
+          dueDate: dueDateISO,
           createdAt: createdAtMillis,
         } as Task;
       });
@@ -56,6 +64,7 @@ export function useTasks() {
       await addDoc(collection(db, 'tasks'), {
         ...taskData,
         createdAt: Timestamp.now(),
+        dueDate: taskData.dueDate ? new Date(taskData.dueDate) : null
       });
     } catch (error) {
       console.error('Error adding task: ', error);
@@ -66,7 +75,10 @@ export function useTasks() {
     try {
       const taskRef = doc(db, 'tasks', task.id);
       const { id, ...taskData } = task;
-      await updateDoc(taskRef, taskData);
+      await updateDoc(taskRef, {
+        ...taskData,
+        dueDate: taskData.dueDate ? new Date(taskData.dueDate) : null
+      });
     } catch (error) {
       console.error('Error updating task: ', error);
     }
