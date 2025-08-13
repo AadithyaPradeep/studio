@@ -24,7 +24,11 @@ export default function TaskList({
 }: TaskListProps) {
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-24 px-4 border-2 border-dashed rounded-xl bg-card/50">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-24 px-4 border-2 border-dashed rounded-xl bg-card/50"
+      >
         <FilePlus2 className="mx-auto h-16 w-16 text-muted-foreground/50" />
         <h3 className="mt-6 text-xl font-semibold text-foreground">
           No tasks here
@@ -32,7 +36,7 @@ export default function TaskList({
         <p className="mt-2 text-base text-muted-foreground">
           Looks like you're all caught up!
         </p>
-      </div>
+      </motion.div>
     );
   }
 

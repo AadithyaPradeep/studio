@@ -14,3 +14,11 @@ export interface Task {
   priority: "low" | "medium" | "high" | "none";
   subtasks: Subtask[];
 }
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: number;
+  updatedAt: number;
+}
