@@ -48,7 +48,7 @@ const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters.").max(100),
   category: z.string({ required_error: "Please select a category." }),
   dueDate: z.date().nullable(),
-  priority: z.enum(["low", "medium", "high"]),
+  priority: z.enum(["low", "medium", "high", "none"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -56,7 +56,7 @@ type FormValues = z.infer<typeof formSchema>;
 interface TaskFormProps {
   mode: "add" | "edit";
   task?: Task;
-  onTaskSubmit: (data: Omit<Task, "id" | "isCompleted" | "createdAt"> | Task) => void;
+  onTaskSubmit: (data: Omit<Task, "id" | "isCompleted" | "createdAt" | "subtasks"> | Task) => void;
   onDelete?: (id: string) => void;
   children: React.ReactNode;
 }
@@ -76,7 +76,7 @@ export default function TaskForm({
       title: task?.title || "",
       category: task?.category || "",
       dueDate: task?.dueDate ? new Date(task.dueDate) : null,
-      priority: task?.priority || "medium",
+      priority: task?.priority || "none",
     },
   });
 
@@ -91,7 +91,7 @@ export default function TaskForm({
       onTaskSubmit(taskData);
     }
     setIsOpen(false);
-    form.reset({ title: "", category: "", dueDate: null, priority: "medium" });
+    form.reset({ title: "", category: "", dueDate: null, priority: "none" });
   };
 
   const handleDelete = () => {
@@ -189,7 +189,7 @@ export default function TaskForm({
                         <Calendar
                           mode="single"
                           selected={field.value ?? undefined}
-                          onSelect={(day) => handleDateSelect(field.value, field.onChange, day)}
+                           onSelect={(day) => handleDateSelect(field.value, field.onChange, day)}
                           initialFocus
                         />
                       </PopoverContent>
@@ -209,12 +209,18 @@ export default function TaskForm({
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex items-center gap-6"
+                      className="flex items-center gap-4"
                     >
+                       <FormItem className="flex items-center space-x-2 cursor-pointer">
+                        <RadioGroupItem value="none" id="none" />
+                        <Label htmlFor="none" className="font-normal flex items-center gap-2 cursor-pointer">
+                          <Flag className="w-4 h-4 text-gray-400" /> None
+                        </Label>
+                      </FormItem>
                       <FormItem className="flex items-center space-x-2 cursor-pointer">
                         <RadioGroupItem value="low" id="low" />
                         <Label htmlFor="low" className="font-normal flex items-center gap-2 cursor-pointer">
-                          <Flag className="w-4 h-4 text-green-500" /> Low
+                          <Flag className="w-4 h-4 text-blue-500" /> Low
                         </Label>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 cursor-pointer">

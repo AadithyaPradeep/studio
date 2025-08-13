@@ -1,3 +1,9 @@
+export interface Subtask {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -5,5 +11,6 @@ export interface Task {
   dueDate: string | null;
   isCompleted: boolean;
   createdAt: number;
-  priority: "low" | "medium" | "high";
+  priority: "low" | "medium" | "high" | "none";
+  subtasks: Subtask[];
 }
