@@ -25,8 +25,8 @@ export default function TaskItem({
 }: TaskItemProps) {
   return (
     <Card className={cn(
-      "w-full transition-all duration-500 ease-in-out hover:shadow-xl hover:-translate-y-1",
-      task.isCompleted ? "bg-card/60 opacity-50" : "bg-card"
+      "w-full transition-all duration-500 ease-in-out hover:shadow-xl",
+      task.isCompleted ? "bg-card/60 opacity-50" : "bg-card hover:-translate-y-1"
     )}>
       <CardContent className="p-4 flex items-center gap-4">
         <Checkbox
@@ -52,7 +52,7 @@ export default function TaskItem({
               <Badge variant="secondary" className="rounded-full">{task.category}</Badge>
             </div>
             {task.dueDate && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 select-none">
                 <Calendar className="h-4 w-4" />
                 <span>{format(new Date(task.dueDate), "MMM d, yyyy")}</span>
               </div>

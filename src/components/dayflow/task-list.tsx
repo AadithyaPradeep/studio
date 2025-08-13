@@ -34,7 +34,7 @@ export default function TaskList({
   return (
     <div className="space-y-3">
       {tasks.map((task) => (
-        <div key={task.id} className="transition-all duration-500">
+        <div key={task.id} className="transition-all duration-500 animate-in fade-in-0 zoom-in-95 slide-in-from-top-10">
           <TaskItem
             task={task}
             onUpdateTask={onUpdateTask}
