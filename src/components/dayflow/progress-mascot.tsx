@@ -3,7 +3,6 @@
 
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useMemo, useEffect } from "react";
-import { cn } from "@/lib/utils";
 
 interface ProgressMascotProps {
   progress: number; // 0-100
@@ -26,57 +25,38 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
     controls.start("wink");
     setTimeout(() => {
       controls.start(mascotState);
-    }, 1000);
+    }, 1200);
   };
-
+  
   const faceVariants = {
     idle: { y: 0, scale: 1 },
-    focused: { y: -5, scale: 1.05 },
+    focused: { y: -2, scale: 1.02 },
     celebrating: { 
-      y: [0, -20, 0], 
-      scale: 1.1,
-      transition: { y: { repeat: Infinity, duration: 1, ease: "easeInOut" } } 
+      y: [0, -15, 0], 
+      scale: [1, 1.1, 1],
+      transition: { y: { repeat: Infinity, duration: 1.5, ease: "easeInOut" } } 
     },
-    wink: { scale: 1.1, transition: { duration: 0.2 } },
+    wink: { scale: 1, transition: { duration: 0.2 } },
   };
 
+  const eyeLidVariants = {
+    idle: { 
+      y: [0, 0, -2, 0, 0],
+      transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+    },
+    focused: { y: -3 },
+    celebrating: { y: 0, d: "M 4 8 C 8 2, 16 2, 20 8" },
+    wink: {
+      d: ["M 4 8 C 8 8, 16 8, 20 8", "M 4 2 C 8 6, 16 6, 20 2", "M 4 8 C 8 8, 16 8, 20 8"],
+      transition: { duration: 0.5 }
+    }
+  };
+  
   const mouthVariants = {
-    idle: { d: "M 20 38 Q 24 42 28 38", },
-    focused: { d: "M 20 38 L 28 38" },
-    celebrating: { d: "M 18 36 C 20 44, 28 44, 30 36 Z" },
-    wink: { d: "M 20 38 Q 24 42 28 38", },
-  };
-  
-  const eyeVariants = {
-    idle: { scaleY: 1, y: 0 },
-    focused: { scaleY: 0.6, y: 2},
-    celebrating: { scaleY: 1, y: 0 },
-    wink: { scaleY: [1, 0.1, 1], transition: { duration: 0.5, times: [0, 0.5, 1] } },
-  }
-
-  const pupilVariants = {
-    idle: {
-      x: [0, 2, -2, 0, 0],
-      y: [0, -1, 1, 0, 0],
-      transition: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-    },
-    focused: { x: 0, y: 0 },
-    celebrating: { x: 0, y: 0 },
-    wink: { x: 0, y: 0 },
-  };
-  
-  const particleVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: (i: number) => ({
-      scale: [0, 1.2, 0],
-      opacity: [0, 1, 0],
-      transition: {
-        duration: 0.8,
-        delay: i * 0.1,
-        repeat: Infinity,
-        repeatDelay: 2
-      }
-    }),
+    idle: { d: "M 18 42 Q 24 46 30 42" },
+    focused: { d: "M 18 42 L 30 42" },
+    celebrating: { d: "M 16 40 C 20 52, 28 52, 32 40 Z" },
+    wink: { d: "M 18 42 Q 24 46 30 42" },
   };
 
   return (
@@ -88,56 +68,57 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
           initial="idle"
           animate={controls}
         >
-          {/* Main Face */}
-          <div className="relative w-32 h-32">
-            <div className="absolute inset-0 rounded-full bg-secondary shadow-inner" />
+          <div className="relative w-40 h-40">
+            {/* Main Face */}
+            <div className="absolute inset-0 rounded-full bg-secondary shadow-inner" 
+                 style={{backgroundColor: '#F3D4B8'}}/>
             
-            {/* Celebration Glow */}
-             <AnimatePresence>
-              {mascotState === 'celebrating' && (
-                 <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      boxShadow: "0 0 30px 5px hsl(var(--primary) / 0.7)"
-                    }}
-                 />
-              )}
-            </AnimatePresence>
-            
+            {/* Hair */}
+            <svg viewBox="0 0 64 64" className="absolute -top-3 left-0 w-full h-full overflow-visible">
+               <motion.path
+                d="M 2,32 C 2,12 12,2 32,2 C 52,2 62,12 62,32 C 62,40 60,45 56,48 C 50,52 45,48 42,45 C 38,48 34,52 32,50 C 28,52 24,48 20,45 C 15,48 10,52 8,48 C 4,45 2,40 2,32 Z"
+                fill="#8D5B4C"
+               />
+            </svg>
+
             {/* Eyes and Mouth */}
             <svg viewBox="0 0 48 48" className="absolute inset-0 w-full h-full">
                 {/* Cheeks */}
-                <circle cx="14" cy="32" r="4" fill="hsl(var(--primary) / 0.2)" />
-                <circle cx="34" cy="32" r="4" fill="hsl(var(--primary) / 0.2)" />
+                <circle cx="14" cy="36" r="4" fill="#E8A899" />
+                <circle cx="34" cy="36" r="4" fill="#E8A899" />
+                
+                {/* Nose */}
+                <path d="M 24 30 L 24 35" stroke="#C78A69" strokeWidth="1.5" strokeLinecap="round" />
 
-                 <motion.g animate={controls}>
-                    {/* Left Eye */}
-                    <motion.g variants={eyeVariants} initial="idle">
-                      <circle cx="18" cy="24" r="5" fill="white" />
-                      <motion.circle 
-                          variants={pupilVariants}
-                          cx="18" cy="24" r="2.5" fill="hsl(var(--foreground))"
-                      />
-                    </motion.g>
-
-                    {/* Right Eye */}
-                    <motion.g variants={eyeVariants} initial="idle">
-                      <circle cx="30" cy="24" r="5" fill="white" />
-                      <motion.circle 
-                          variants={pupilVariants}
-                          cx="30" cy="24" r="2.5" fill="hsl(var(--foreground))"
-                      />
-                    </motion.g>
-                 </motion.g>
+                 {/* Eyes */}
+                <g transform="translate(0, 18)">
+                    <motion.path 
+                        d="M 12 8 C 14 2, 20 2, 22 8" 
+                        stroke="#4F342B" 
+                        strokeWidth="2.5" 
+                        fill="none" 
+                        strokeLinecap="round" 
+                        variants={eyeLidVariants} 
+                        initial="idle"
+                        animate={controls}
+                    />
+                    <motion.path 
+                        d="M 26 8 C 28 2, 34 2, 36 8" 
+                        stroke="#4F342B" 
+                        strokeWidth="2.5" 
+                        fill="none" 
+                        strokeLinecap="round" 
+                        variants={eyeLidVariants} 
+                        initial="idle"
+                        animate={controls}
+                    />
+                </g>
                  
+                {/* Mouth */}
                  <motion.path
-                    stroke="hsl(var(--foreground))"
-                    strokeWidth="1.5"
-                    fill="hsl(var(--foreground))"
-                    strokeLinecap="round"
+                    stroke="#4F342B"
+                    strokeWidth="2.5"
+                    fill="white"
                     strokeLinejoin="round"
                     variants={mouthVariants}
                     initial="idle"
@@ -145,26 +126,6 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
                  />
             </svg>
           </div>
-          
-           {/* Celebration Sparkles */}
-          <AnimatePresence>
-              {mascotState === 'celebrating' && (
-                  [...Array(6)].map((_, i) => (
-                      <motion.div
-                          key={i}
-                          custom={i}
-                          variants={particleVariants}
-                          initial="hidden"
-                          animate="visible"
-                          className="absolute w-3 h-3 bg-primary/80 rounded-full"
-                          style={{
-                              top: `${50 + 45 * Math.sin(i * 60 * Math.PI / 180)}%`,
-                              left: `${50 + 45 * Math.cos(i * 60 * Math.PI / 180)}%`,
-                          }}
-                      />
-                  ))
-              )}
-          </AnimatePresence>
         </motion.div>
       </div>
 
