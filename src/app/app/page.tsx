@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import type { Task } from "@/lib/types";
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useTasks } from "@/hooks/use-tasks";
 import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
 import SummaryHeader from "@/components/dayflow/summary-header";
 import Link from "next/link";
@@ -10,14 +10,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 export default function HomePage() {
-  const [tasks, setTasks] = useLocalStorage<Task[]>("dayflow:tasks", []);
+  const { tasks, loading } = useTasks();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
+  if (!isMounted || loading) {
     return <LoadingSkeleton />;
   }
 

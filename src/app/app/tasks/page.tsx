@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { Task, Subtask } from "@/lib/types";
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useTasks } from "@/hooks/use-tasks";
 import TaskList from "@/components/dayflow/task-list";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DayflowHeader from "@/components/dayflow/dayflow-header";
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useLocalStorage<Task[]>("dayflow:tasks", []);
+  const { 
+    tasks, 
+    addTask, 
+    updateTask, 
+    deleteTask, 
+    toggleComplete, 
+    addSubtask, 
+    deleteSubtask,
+    loading 
+  } = useTasks();
+
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -23,77 +33,32 @@ export default function TasksPage() {
 
   // Task Handlers
   const handleAddTask = (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "subtasks">) => {
-    const newTask: Task = {
-      id: uuidv4(),
+    const newTask: Omit<Task, "id" | "createdAt"> = {
       ...taskData,
       isCompleted: false,
-      createdAt: Date.now(),
       subtasks: [],
     };
-    setTasks(prevTasks => [...prevTasks, newTask]);
+    addTask(newTask);
   };
 
   const handleUpdateTask = (updatedTask: Task) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task => (task.id === updatedTask.id ? updatedTask : task))
-    );
+    updateTask(updatedTask);
   };
 
   const handleDeleteTask = (id: string) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+    deleteTask(id);
   };
 
   const handleToggleComplete = (id: string, subtaskId?: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task => {
-        if (task.id === id) {
-          if (subtaskId) {
-            const updatedSubtasks = task.subtasks.map(sub => 
-              sub.id === subtaskId ? { ...sub, isCompleted: !sub.isCompleted } : sub
-            );
-            const allSubtasksCompleted = updatedSubtasks.every(s => s.isCompleted);
-            return { 
-              ...task, 
-              subtasks: updatedSubtasks,
-              isCompleted: allSubtasksCompleted ? true : task.isCompleted,
-            };
-          } else {
-            const newCompletionState = !task.isCompleted;
-            return { 
-              ...task, 
-              isCompleted: newCompletionState,
-              subtasks: task.subtasks.map(s => ({ ...s, isCompleted: newCompletionState }))
-            };
-          }
-        }
-        return task;
-      })
-    );
+    toggleComplete(id, subtaskId);
   };
 
   const handleAddSubtask = (taskId: string, subtaskTitle: string) => {
-    const newSubtask: Subtask = {
-      id: uuidv4(),
-      title: subtaskTitle,
-      isCompleted: false,
-    };
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, subtasks: [...task.subtasks, newSubtask] }
-          : task
-      )
-    );
+    addSubtask(taskId, subtaskTitle);
   };
 
   const handleDeleteSubtask = (taskId: string, subtaskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId
-          ? { ...task, subtasks: task.subtasks.filter(s => s.id !== subtaskId) }
-          : task
-      )
-    );
+    deleteSubtask(taskId, subtaskId);
   };
 
   const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
@@ -122,7 +87,7 @@ export default function TasksPage() {
       return [...new Set(categories)];
     }, [tasks]);
 
-  if (!isMounted) {
+  if (!isMounted || loading) {
     return <LoadingSkeleton />;
   }
 
