@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import type { Task, Subtask, Note } from "@/lib/types";
+import type { Task, Subtask } from "@/lib/types";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import TaskList from "@/components/dayflow/task-list";
 import DayflowHeader from "@/components/dayflow/dayflow-header";
@@ -13,13 +13,10 @@ import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
 import SummaryHeader from "@/components/dayflow/summary-header";
 import { isToday } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import NoteList from "@/components/dayflow/note-list";
 
 export default function Home() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("dayflow:tasks", []);
-  const [notes, setNotes] = useLocalStorage<Note[]>("dayflow:notes", []);
   const [isMounted, setIsMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState("tasks");
 
   useEffect(() => {
     setIsMounted(true);
@@ -100,32 +97,6 @@ export default function Home() {
     );
   };
 
-  // Note Handlers
-  const handleAddNote = () => {
-    const newNote: Note = {
-      id: uuidv4(),
-      title: "New Note",
-      content: "",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    setNotes(prevNotes => [newNote, ...prevNotes]);
-  };
-
-  const handleUpdateNote = (updatedNote: Note) => {
-    setNotes(prevNotes =>
-      prevNotes.map(note =>
-        note.id === updatedNote.id
-          ? { ...updatedNote, updatedAt: Date.now() }
-          : note
-      )
-    );
-  };
-
-  const handleDeleteNote = (id: string) => {
-    setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
-  };
-
   const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
 
   const sortedTasks = useMemo(() => {
@@ -136,10 +107,6 @@ export default function Home() {
       return priorityOrder[a.priority] - priorityOrder[b.priority] || b.createdAt - a.createdAt;
     });
   }, [tasks]);
-
-  const sortedNotes = useMemo(() => {
-    return [...notes].sort((a, b) => b.updatedAt - a.updatedAt);
-  }, [notes]);
 
   const todayTasks = useMemo(() => {
     return sortedTasks.filter(task => 
@@ -170,65 +137,42 @@ export default function Home() {
       <main className="flex-grow container mx-auto px-4 py-8 md:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <SummaryHeader tasks={tasks} />
+          
+          <div className="flex justify-end items-center mb-6">
+            <TaskForm 
+              mode="add" 
+              onTaskSubmit={handleAddTask}
+            >
+              <Button size="lg" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Add New Task
+              </Button>
+            </TaskForm>
+          </div>
 
-          <Tabs defaultValue="tasks" className="w-full" onValueChange={setActiveTab}>
-            <div className="flex justify-between items-center mb-6">
-              <TabsList>
-                <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                <TabsTrigger value="notes">Notes</TabsTrigger>
-              </TabsList>
-              {activeTab === 'tasks' ? (
-                <TaskForm 
-                  mode="add" 
-                  onTaskSubmit={handleAddTask}
-                >
-                  <Button size="lg" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40">
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    Add New Task
-                  </Button>
-                </TaskForm>
-              ) : (
-                 <Button size="lg" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40" onClick={handleAddNote}>
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    Add New Note
-                  </Button>
-              )}
-            </div>
-
-            <TabsContent value="tasks">
-               <Tabs defaultValue="all" className="w-full">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">All Tasks</TabsTrigger>
-                  <TabsTrigger value="today">Today</TabsTrigger>
-                </TabsList>
-                <TabsContent value="all">
-                  <TaskList
-                    tasks={sortedTasks}
-                    onUpdateTask={handleUpdateTask}
-                    onDeleteTask={handleDeleteTask}
-                    onToggleComplete={handleToggleComplete}
-                    onAddSubtask={handleAddSubtask}
-                    onDeleteSubtask={handleDeleteSubtask}
-                  />
-                </TabsContent>
-                <TabsContent value="today">
-                  <TaskList
-                    tasks={todayTasks}
-                    onUpdateTask={handleUpdateTask}
-                    onDeleteTask={handleDeleteTask}
-                    onToggleComplete={handleToggleComplete}
-                    onAddSubtask={handleAddSubtask}
-                    onDeleteSubtask={handleDeleteSubtask}
-                  />
-                </TabsContent>
-              </Tabs>
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="all">All Tasks</TabsTrigger>
+              <TabsTrigger value="today">Today</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <TaskList
+                tasks={sortedTasks}
+                onUpdateTask={handleUpdateTask}
+                onDeleteTask={handleDeleteTask}
+                onToggleComplete={handleToggleComplete}
+                onAddSubtask={handleAddSubtask}
+                onDeleteSubtask={handleDeleteSubtask}
+              />
             </TabsContent>
-            
-            <TabsContent value="notes">
-              <NoteList
-                notes={sortedNotes}
-                onUpdateNote={handleUpdateNote}
-                onDeleteNote={handleDeleteNote}
+            <TabsContent value="today">
+              <TaskList
+                tasks={todayTasks}
+                onUpdateTask={handleUpdateTask}
+                onDeleteTask={handleDeleteTask}
+                onToggleComplete={handleToggleComplete}
+                onAddSubtask={handleAddSubtask}
+                onDeleteSubtask={handleDeleteSubtask}
               />
             </TabsContent>
           </Tabs>
