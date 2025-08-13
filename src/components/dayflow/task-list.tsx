@@ -3,6 +3,7 @@
 import TaskItem from "./task-item";
 import type { Task } from "@/lib/types";
 import { FilePlus2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface TaskListProps {
   tasks: Task[];
@@ -32,17 +33,18 @@ export default function TaskList({
   }
 
   return (
-    <div className="space-y-3">
-      {tasks.map((task) => (
-        <div key={task.id} className="transition-all duration-500 animate-in fade-in-0 zoom-in-95 slide-in-from-top-10">
-          <TaskItem
-            task={task}
-            onUpdateTask={onUpdateTask}
-            onDeleteTask={onDeleteTask}
-            onToggleComplete={onToggleComplete}
-          />
-        </div>
-      ))}
-    </div>
+    <motion.div layout className="space-y-3">
+      <AnimatePresence initial={false}>
+        {tasks.map((task) => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              onUpdateTask={onUpdateTask}
+              onDeleteTask={onDeleteTask}
+              onToggleComplete={onToggleComplete}
+            />
+        ))}
+      </AnimatePresence>
+    </motion.div>
   );
 }
