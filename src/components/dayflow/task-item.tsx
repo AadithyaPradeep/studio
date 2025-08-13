@@ -25,8 +25,8 @@ export default function TaskItem({
 }: TaskItemProps) {
   return (
     <Card className={cn(
-      "w-full transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1",
-      task.isCompleted ? "bg-card/60 opacity-70" : "bg-card"
+      "w-full transition-all duration-500 ease-in-out hover:shadow-xl hover:-translate-y-1",
+      task.isCompleted ? "bg-card/60 opacity-50" : "bg-card"
     )}>
       <CardContent className="p-4 flex items-center gap-4">
         <Checkbox

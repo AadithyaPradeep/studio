@@ -34,13 +34,14 @@ export default function TaskList({
   return (
     <div className="space-y-3">
       {tasks.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onUpdateTask={onUpdateTask}
-          onDeleteTask={onDeleteTask}
-          onToggleComplete={onToggleComplete}
-        />
+        <div key={task.id} className="transition-all duration-500">
+          <TaskItem
+            task={task}
+            onUpdateTask={onUpdateTask}
+            onDeleteTask={onDeleteTask}
+            onToggleComplete={onToggleComplete}
+          />
+        </div>
       ))}
     </div>
   );
