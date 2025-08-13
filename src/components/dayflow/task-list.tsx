@@ -34,7 +34,7 @@ export default function TaskList({
 
   return (
     <motion.div layout className="space-y-3">
-      <AnimatePresence initial={false}>
+      <AnimatePresence>
         {tasks.map((task) => (
             <TaskItem
               key={task.id}

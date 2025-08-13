@@ -24,31 +24,26 @@ export default function TaskItem({
   onDeleteTask,
   onToggleComplete,
 }: TaskItemProps) {
-  const cardVariants = {
-    checked: { 
-      opacity: 0.5, 
-      scale: 0.95, 
-      transition: { duration: 0.3, ease: "easeOut" } 
-    },
-    unchecked: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { duration: 0.3, ease: "easeOut" } 
-    },
+  const taskItemVariants = {
+    initial: { opacity: 0, y: 20, scale: 0.95 },
+    animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2, ease: "easeIn" } },
+    hover: { scale: 1.02, transition: { duration: 0.2 } },
   };
 
   return (
     <motion.div
       layout
-      variants={cardVariants}
-      initial={false}
-      animate={task.isCompleted ? "checked" : "unchecked"}
-      exit={{ opacity: 0, y: 20 }}
+      variants={taskItemVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      whileHover={!task.isCompleted ? 'hover' : ''}
       className="w-full"
     >
       <Card className={cn(
-        "w-full transition-shadow duration-300 ease-in-out hover:shadow-xl",
-        task.isCompleted ? "bg-card/60" : "bg-card hover:-translate-y-1"
+        "w-full transition-all duration-300 ease-in-out",
+        task.isCompleted ? "bg-card/60 shadow-none" : "bg-card shadow-md hover:shadow-xl"
       )}>
         <CardContent className="p-4 flex items-center gap-4">
           <Checkbox
