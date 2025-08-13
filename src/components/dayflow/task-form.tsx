@@ -57,7 +57,6 @@ interface TaskFormProps {
   mode: "add" | "edit";
   task?: Task;
   onTaskSubmit: (data: Omit<Task, "id" | "isCompleted" | "createdAt" | "subtasks"> | Task) => void;
-  onDelete?: (id: string) => void;
   children: React.ReactNode;
 }
 
@@ -65,7 +64,6 @@ export default function TaskForm({
   mode,
   task,
   onTaskSubmit,
-  onDelete,
   children,
 }: TaskFormProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,13 +90,6 @@ export default function TaskForm({
     }
     setIsOpen(false);
     form.reset({ title: "", category: "", dueDate: null, priority: "none" });
-  };
-
-  const handleDelete = () => {
-    if (task && onDelete) {
-      onDelete(task.id);
-      setIsOpen(false);
-    }
   };
 
   const handleDateSelect = (
@@ -242,11 +233,6 @@ export default function TaskForm({
               )}
             />
             <DialogFooter className="pt-4">
-              {mode === 'edit' && onDelete && (
-                <Button type="button" variant="destructive" onClick={handleDelete} className="mr-auto">
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete
-                </Button>
-              )}
               <DialogClose asChild>
                 <Button type="button" variant="secondary">
                   Cancel
