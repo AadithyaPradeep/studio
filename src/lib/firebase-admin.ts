@@ -1,17 +1,28 @@
 
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  : undefined;
+let app: App;
 
 if (!getApps().length) {
-  initializeApp({
-    credential: cert(serviceAccount)
-  });
+  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+    : undefined;
+
+  if (serviceAccount) {
+    app = initializeApp({
+      credential: cert(serviceAccount)
+    });
+  } else {
+    console.warn("Firebase Admin SDK service account is not defined. Skipping initialization.");
+    // Create a dummy app object or handle this case as needed
+    // For now, we'll avoid initializing and db will throw an error if used.
+  }
+} else {
+    app = getApps()[0];
 }
 
-const db = getFirestore();
+const db = app ? getFirestore(app) : getFirestore();
+
 
 export { db };
