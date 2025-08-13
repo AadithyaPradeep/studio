@@ -27,10 +27,10 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
   };
   
   const containerVariants = {
-    idle: { y: 0 },
-    focused: { y: 0 },
+    idle: { y: 0, transition: { duration: 0.8, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" } },
+    focused: { y: [0, -5, 0], transition: { duration: 1.5, ease: "easeInOut", repeat: Infinity } },
     celebrating: { 
-      y: [0, -15, 0, -15, 0], 
+      y: [0, -20, 0, -20, 0], 
       transition: { duration: 1.5, ease: "easeInOut" } 
     },
     wink: {
@@ -40,22 +40,12 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
   };
 
   const eyeVariants = {
-    idle: { d: "M 20 28 C 21.1 28 22 27.1 22 26 C 22 24.9 21.1 24 20 24 C 18.9 24 18 24.9 18 26 C 18 27.1 18.9 28 20 28 Z M 44 28 C 45.1 28 46 27.1 46 26 C 46 24.9 45.1 24 44 24 C 42.9 24 42 24.9 42 26 C 42 27.1 42.9 28 44 28 Z" },
-    focused: { d: "M 20 28 C 21.1 28 22 27.1 22 26 C 22 24.9 21.1 24 20 24 C 18.9 24 18 24.9 18 26 C 18 27.1 18.9 28 20 28 Z M 44 28 C 45.1 28 46 27.1 46 26 C 46 24.9 45.1 24 44 24 C 42.9 24 42 24.9 42 26 C 42 27.1 42.9 28 44 28 Z" },
-    celebrating: { d: "M 18 26 C 18 24.9 18.9 24 20 24 C 21.1 24 22 24.9 22 26 C 22 27.1 21.1 28 20 28 C 18.9 28 18 27.1 18 26 Z M 42 26 C 42 24.9 42.9 24 44 24 C 45.1 24 46 24.9 46 26 C 46 27.1 45.1 28 44 28 C 42.9 28 42 27.1 42 26 Z" },
+    idle: { d: "M 20 32 C 22 28, 26 28, 28 32 M 36 32 C 38 28, 42 28, 44 32", transition: { duration: 0.3 } },
+    focused: { d: "M 18 30 C 22 34, 26 34, 30 30 M 34 30 C 38 34, 42 34, 46 30", transition: { duration: 0.3 } },
+    celebrating: { d: "M 18 32 C 22 26, 26 26, 30 32 M 34 32 C 38 26, 42 26, 46 32", transition: { duration: 0.3 } },
     wink: { 
-      d: "M 18 26 C 18 24.9 18.9 24 20 24 C 21.1 24 22 24.9 22 26 C 22 27.1 21.1 28 20 28 C 18.9 28 18 27.1 18 26 Z M 40 26 C 42 22, 46 22, 48 26",
+      d: "M 18 32 C 22 28, 26 28, 28 32 M 36 31 C 40 31, 40 31, 44 31",
       transition: { duration: 0.1, delay: 0.1 } 
-    }
-  };
-  
-  const mouthVariants = {
-    idle: { d: "M 24 40 C 28 44, 36 44, 40 40" },
-    focused: { d: "M 22 38 C 24 48, 40 48, 42 38 Z" },
-    celebrating: { d: "M 22 38 C 24 48, 40 48, 42 38 Z" },
-    wink: { 
-      d: "M 24 40 C 28 44, 36 44, 40 40",
-      transition: { duration: 0.1, delay: 0.1 }
     }
   };
   
@@ -66,40 +56,34 @@ export default function ProgressMascot({ progress }: ProgressMascotProps) {
         onClick={handleInteraction}
         variants={containerVariants}
         animate={controls}
+        initial="idle"
       >
         <div className="w-full h-full">
-            <svg viewBox="0 0 64 64" width="192" height="192">
-                {/* Body */}
-                <path d="M 54 24 V 52 C 54 55.3137 51.3137 58 48 58 H 16 C 12.6863 58 10 55.3137 10 52 V 24 C 10 20.6863 12.6863 18 16 18 H 48 C 51.3137 18 54 20.6863 54 24 Z" fill="#FFFFFF" stroke="#E0E0E0" strokeWidth="2" />
-                
-                {/* Antenna */}
-                <line x1="32" y1="18" x2="32" y2="10" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-                <circle cx="32" cy="8" r="3" fill="#FFFFFF" stroke="#E0E0E0" strokeWidth="1" />
-                
-                {/* Ears */}
-                <circle cx="8" cy="36" r="6" fill="#FFFFFF" stroke="#E0E0E0" strokeWidth="2" />
-                <circle cx="56" cy="36" r="6" fill="#FFFFFF" stroke="#E0E0E0" strokeWidth="2" />
-                
-                {/* Face Plate */}
-                <path d="M 48 22 V 52 C 48 53.1046 47.1046 54 46 54 H 18 C 16.8954 54 16 53.1046 16 52 V 22 C 16 20.8954 16.8954 20 18 20 H 46 C 47.1046 20 48 20.8954 48 22 Z" fill="#212121" />
-                
-                {/* Eyes */}
-                <motion.path
-                    fill="#40E0D0"
-                    variants={eyeVariants}
-                    animate={controls}
-                />
-                 
-                {/* Mouth */}
-                 <motion.path
-                    fill="#40E0D0"
-                    stroke="#40E0D0"
-                    strokeWidth="2.5"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    variants={mouthVariants}
-                    animate={controls}
-                 />
+            <svg viewBox="0 0 64 64" width="192" height="192" fill="none">
+              {/* Body */}
+              <path d="M32 48C38.6274 48 44 53.3726 44 60H20C20 53.3726 25.3726 48 32 48Z" fill="#A3A9F4"/>
+              
+              {/* Head */}
+              <path d="M12 36C12 24.9543 20.9543 16 32 16C43.0457 16 52 24.9543 52 36V48H12V36Z" fill="#3D457F"/>
+              
+              {/* Ears */}
+              <path d="M12 36C12 31.5817 15.5817 28 20 28L14 18L12 36Z" fill="#3D457F"/>
+              <path d="M52 36C52 31.5817 48.4183 28 44 28L50 18L52 36Z" fill="#3D457F"/>
+              <path d="M16 28.5C16 25.4624 18.4624 23 21.5 23L15 15L16 28.5Z" fill="#A3A9F4"/>
+              <path d="M48 28.5C48 25.4624 45.5376 23 42.5 23L49 15L48 28.5Z" fill="#A3A9F4"/>
+              
+              {/* Face Screen */}
+              <path d="M16 46V36C16 27.1634 23.1634 20 32 20C40.8366 20 48 27.1634 48 36V46H16Z" fill="#1C1C3A"/>
+              
+              {/* Eyes */}
+              <motion.path
+                  stroke="#80F6E8"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  variants={eyeVariants}
+                  animate={controls}
+              />
             </svg>
         </div>
       </motion.div>
