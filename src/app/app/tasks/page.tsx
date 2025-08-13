@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from "react";
@@ -11,6 +12,7 @@ import { isToday } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DayflowHeader from "@/components/dayflow/dayflow-header";
 import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TasksPage() {
   const { 
@@ -57,19 +59,21 @@ export default function TasksPage() {
   const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
 
   const sortedTasks = useMemo(() => {
+    if (loading) return [];
     return [...tasks].sort((a, b) => {
       if (a.isCompleted !== b.isCompleted) {
         return a.isCompleted ? 1 : -1;
       }
       return priorityOrder[a.priority] - priorityOrder[b.priority] || b.createdAt - a.createdAt;
     });
-  }, [tasks]);
+  }, [tasks, loading]);
 
   const todayTasks = useMemo(() => {
+    if (loading) return [];
     return sortedTasks.filter(task => 
       !task.isCompleted && task.dueDate && isToday(new Date(task.dueDate))
     )
-  }, [sortedTasks]);
+  }, [sortedTasks, loading]);
   
   const previousTaskTitles = useMemo(() => tasks.map(task => task.title), [tasks]);
   
@@ -79,10 +83,6 @@ export default function TasksPage() {
         .map(task => task.category);
       return [...new Set(categories)];
     }, [tasks]);
-
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
 
   return (
       <div className="max-w-4xl mx-auto">
@@ -104,33 +104,42 @@ export default function TasksPage() {
           </TaskForm>
         </div>
 
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="all">All Tasks</TabsTrigger>
-            <TabsTrigger value="today">Today</TabsTrigger>
-          </TabsList>
-          <TabsContent value="all">
-            <TaskList
-              tasks={sortedTasks}
-              onUpdateTask={handleUpdateTask}
-              onDeleteTask={handleDeleteTask}
-              onToggleComplete={handleToggleComplete}
-              onAddSubtask={handleAddSubtask}
-              onDeleteSubtask={handleDeleteSubtask}
-            />
-          </TabsContent>
-          <TabsContent value="today">
-            <TaskList
-              tasks={todayTasks}
-              onUpdateTask={handleUpdateTask}
-              onDeleteTask={handleDeleteTask}
-              onToggleComplete={handleToggleComplete}
-              onAddSubtask={handleAddSubtask}
-              onDeleteSubtask={handleDeleteSubtask}
-            />
-          </TabsContent>
-        </Tabs>
-
+        {loading ? (
+            <div className="space-y-3 mt-4">
+              <Skeleton className="h-10 w-48 mb-4" />
+              {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : (
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="all">All Tasks</TabsTrigger>
+              <TabsTrigger value="today">Today</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <TaskList
+                tasks={sortedTasks}
+                onUpdateTask={handleUpdateTask}
+                onDeleteTask={handleDeleteTask}
+                onToggleComplete={handleToggleComplete}
+                onAddSubtask={handleAddSubtask}
+                onDeleteSubtask={handleDeleteSubtask}
+              />
+            </TabsContent>
+            <TabsContent value="today">
+              <TaskList
+                tasks={todayTasks}
+                onUpdateTask={handleUpdateTask}
+                onDeleteTask={handleDeleteTask}
+                onToggleComplete={handleToggleComplete}
+                onAddSubtask={handleAddSubtask}
+                onDeleteSubtask={handleDeleteSubtask}
+              />
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
   );
 }
+
