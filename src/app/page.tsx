@@ -11,24 +11,23 @@ import { Button } from "@/components/ui/button";
 import TaskForm from "@/components/dayflow/task-form";
 import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
 
-// Polyfill for uuid in browser environments that might need it.
-if (typeof window !== "undefined" && !window.crypto) {
-  window.crypto = {
-    // @ts-ignore
-    getRandomValues: (arr) => {
-      for (let i = 0, l = arr.length; i < l; i++) {
-        arr[i] = Math.floor(Math.random() * 256);
-      }
-      return arr;
-    },
-  };
-}
-
 export default function Home() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("dayflow:tasks", []);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // Polyfill for uuid in browser environments that might need it.
+    if (typeof window !== "undefined" && !window.crypto) {
+      window.crypto = {
+        // @ts-ignore
+        getRandomValues: (arr) => {
+          for (let i = 0, l = arr.length; i < l; i++) {
+            arr[i] = Math.floor(Math.random() * 256);
+          }
+          return arr;
+        },
+      };
+    }
     setIsMounted(true);
   }, []);
 
