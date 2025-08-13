@@ -1,10 +1,20 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Figtree, Onest } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const fontSans = Figtree({ 
+  subsets: ['latin'], 
+  variable: '--font-sans',
+});
+
+const fontHeadline = Onest({
+  subsets: ['latin'],
+  variable: '--font-headline',
+  weight: ['400', '700', '900'],
+});
+
 
 export const metadata: Metadata = {
   title: 'DayFlow',
@@ -18,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("font-sans antialiased", inter.variable)} suppressHydrationWarning>
+      <body className={cn("font-sans antialiased", fontSans.variable, fontHeadline.variable)} suppressHydrationWarning>
         {children}
         <Toaster />
       </body>

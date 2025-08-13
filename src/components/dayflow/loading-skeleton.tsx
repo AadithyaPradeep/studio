@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { ListTodo, BrainCircuit } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 
 export default function LoadingSkeleton() {
   return (
@@ -13,22 +13,24 @@ export default function LoadingSkeleton() {
                 DayFlow
               </span>
             </div>
-            <Skeleton className="h-10 w-40" />
+            <Skeleton className="h-10 w-40 rounded-lg" />
           </div>
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 py-8 md:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <ListTodo className="h-6 w-6 text-primary" />
-              <Skeleton className="h-8 w-48" />
-            </div>
-            <Skeleton className="h-10 w-28" />
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-8">
+            <Skeleton className="h-12 w-48 mb-2" />
+            <Skeleton className="h-8 w-full" />
           </div>
+
+          <div className="flex justify-end items-center mb-6">
+            <Skeleton className="h-12 w-36 rounded-lg" />
+          </div>
+
           <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-lg" />
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full rounded-xl" />
             ))}
           </div>
         </div>

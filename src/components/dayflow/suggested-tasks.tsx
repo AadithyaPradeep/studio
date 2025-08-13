@@ -17,7 +17,7 @@ import type { Task } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
 interface SuggestedTasksProps {
-  onTaskCreate: (taskData: Omit<Task, "id" | "isCompleted" | "createdAt">) => void;
+  onTaskCreate: (taskData: Omit<Task, "id" | "isCompleted" | "createdAt" | "priority">) => void;
   previousTaskTitles: string[];
   todaysCategories: string[];
 }
@@ -57,8 +57,8 @@ export default function SuggestedTasks({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" onClick={fetchSuggestions}>
-          <Sparkles className="mr-2 h-4 w-4" />
-          Get Suggestions
+          <Sparkles className="mr-2 h-4 w-4 text-primary" />
+          AI Suggestions
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -76,18 +76,23 @@ export default function SuggestedTasks({
                 suggestions.map((suggestion, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 rounded-md bg-secondary/50"
+                    className="flex items-center justify-between p-3 rounded-md bg-secondary/50 hover:bg-secondary"
                   >
-                    <p className="text-sm font-medium text-secondary-foreground">
-                      {suggestion.title}
-                    </p>
+                    <div>
+                      <p className="text-sm font-medium text-secondary-foreground">
+                        {suggestion.title}
+                      </p>
+                       <p className="text-xs text-muted-foreground">
+                        Category: {suggestion.category}
+                      </p>
+                    </div>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => handleAddSuggestion(suggestion)}
                       aria-label={`Add task: ${suggestion.title}`}
                     >
-                      <PlusCircle className="h-4 w-4" />
+                      <PlusCircle className="h-5 w-5 text-primary" />
                     </Button>
                   </div>
                 ))

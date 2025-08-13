@@ -6,10 +6,11 @@ import type { Task } from "@/lib/types";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import TaskList from "@/components/dayflow/task-list";
 import DayflowHeader from "@/components/dayflow/dayflow-header";
-import { PlusCircle, ListTodo } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TaskForm from "@/components/dayflow/task-form";
 import LoadingSkeleton from "@/components/dayflow/loading-skeleton";
+import SummaryHeader from "@/components/dayflow/summary-header";
 
 export default function Home() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("dayflow:tasks", []);
@@ -46,11 +47,16 @@ export default function Home() {
       )
     );
   };
+  
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
 
   const sortedTasks = useMemo(() => {
     return [...tasks].sort((a, b) => {
       if (a.isCompleted !== b.isCompleted) {
         return a.isCompleted ? 1 : -1;
+      }
+      if (a.priority !== b.priority) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
       }
       return b.createdAt - a.createdAt;
     });
@@ -77,21 +83,16 @@ export default function Home() {
         todaysCategories={todaysCategories}
       />
       <main className="flex-grow container mx-auto px-4 py-8 md:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <ListTodo className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl md:text-4xl font-bold font-headline">
-                Today's Flow
-              </h1>
-            </div>
+        <div className="max-w-3xl mx-auto">
+          <SummaryHeader tasks={tasks} />
+          <div className="flex justify-end items-center mb-6">
             <TaskForm 
               mode="add" 
               onTaskSubmit={handleAddTask}
             >
-              <Button size="lg">
+              <Button size="lg" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40">
                 <PlusCircle className="mr-2 h-5 w-5" />
-                Add Task
+                Add New Task
               </Button>
             </TaskForm>
           </div>

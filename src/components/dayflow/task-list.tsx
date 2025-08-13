@@ -20,13 +20,13 @@ export default function TaskList({
 }: TaskListProps) {
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-16 px-4 border-2 border-dashed rounded-lg">
-        <FilePlus2 className="mx-auto h-12 w-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-medium text-foreground">
+      <div className="text-center py-24 px-4 border-2 border-dashed rounded-xl bg-card/50">
+        <FilePlus2 className="mx-auto h-16 w-16 text-muted-foreground/50" />
+        <h3 className="mt-6 text-xl font-semibold text-foreground">
           No tasks yet
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Get started by adding a new task.
+        <p className="mt-2 text-base text-muted-foreground">
+          Click "Add New Task" to get started!
         </p>
       </div>
     );

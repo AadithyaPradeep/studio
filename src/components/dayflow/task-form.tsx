@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Edit, Trash2 } from "lucide-react";
+import { Calendar as CalendarIcon, Edit, Trash2, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -39,13 +39,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { TASK_CATEGORIES } from "./constants";
 import type { Task } from "@/lib/types";
 
 const formSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 characters."),
+  title: z.string().min(2, "Title must be at least 2 characters.").max(100),
   category: z.string({ required_error: "Please select a category." }),
   dueDate: z.date().nullable(),
+  priority: z.enum(["low", "medium", "high"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -73,6 +75,7 @@ export default function TaskForm({
       title: task?.title || "",
       category: task?.category || "",
       dueDate: task?.dueDate ? new Date(task.dueDate) : null,
+      priority: task?.priority || "medium",
     },
   });
 
@@ -87,7 +90,7 @@ export default function TaskForm({
       onTaskSubmit(taskData);
     }
     setIsOpen(false);
-    form.reset({ title: "", category: "", dueDate: null });
+    form.reset({ title: "", category: "", dueDate: null, priority: "medium" });
   };
 
   const handleDelete = () => {
@@ -112,7 +115,7 @@ export default function TaskForm({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>{mode === "add" ? "Add New Task" : "Edit Task"}</DialogTitle>
         </DialogHeader>
@@ -131,7 +134,7 @@ export default function TaskForm({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="category"
@@ -181,7 +184,7 @@ export default function TaskForm({
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start" side="bottom">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={field.value ?? undefined}
@@ -195,6 +198,42 @@ export default function TaskForm({
                 )}
               />
             </div>
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex items-center gap-6"
+                    >
+                      <FormItem className="flex items-center space-x-2 cursor-pointer">
+                        <RadioGroupItem value="low" id="low" />
+                        <Label htmlFor="low" className="font-normal flex items-center gap-2 cursor-pointer">
+                          <Flag className="w-4 h-4 text-green-500" /> Low
+                        </Label>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 cursor-pointer">
+                        <RadioGroupItem value="medium" id="medium" />
+                        <Label htmlFor="medium" className="font-normal flex items-center gap-2 cursor-pointer">
+                          <Flag className="w-4 h-4 text-yellow-500" /> Medium
+                        </Label>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 cursor-pointer">
+                        <RadioGroupItem value="high" id="high" />
+                        <Label htmlFor="high" className="font-normal flex items-center gap-2 cursor-pointer">
+                          <Flag className="w-4 h-4 text-red-500" /> High
+                        </Label>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DialogFooter className="pt-4">
               {mode === 'edit' && onDelete && (
                 <Button type="button" variant="destructive" onClick={handleDelete} className="mr-auto">
