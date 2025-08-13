@@ -7,7 +7,6 @@ import SummaryHeader from "@/components/dayflow/summary-header";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import ProgressMascot from "@/components/dayflow/progress-mascot";
 
 export default function HomePage() {
   const { tasks } = useTasks();
@@ -27,9 +26,8 @@ export default function HomePage() {
             <p className="text-muted-foreground">Welcome back! Here's your daily summary.</p>
         </div>
 
-        <div className="mt-6 grid md:grid-cols-[1fr_200px] gap-8 items-center">
+        <div className="mt-6">
             <SummaryHeader tasks={tasks} />
-            <ProgressMascot progress={progress} />
         </div>
         
         <div className="text-center mt-8">
