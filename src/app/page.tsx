@@ -16,18 +16,6 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Polyfill for uuid in browser environments that might need it.
-    if (typeof window !== "undefined" && !window.crypto) {
-      window.crypto = {
-        // @ts-ignore
-        getRandomValues: (arr) => {
-          for (let i = 0, l = arr.length; i < l; i++) {
-            arr[i] = Math.floor(Math.random() * 256);
-          }
-          return arr;
-        },
-      };
-    }
     setIsMounted(true);
   }, []);
 
