@@ -1,6 +1,6 @@
+
 "use client";
 
-import { useState } from "react";
 import { useTasks } from "@/hooks/use-tasks";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -11,22 +11,22 @@ import {
 import { format, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
 
-export default function CalendarView() {
-  const { tasks } = useTasks();
-  const [date, setDate] = useState<Date | undefined>(new Date());
+interface CalendarViewProps {
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
+}
 
-  const tasksForSelectedDay = tasks.filter(
-    (task) => task.dueDate && date && isSameDay(new Date(task.dueDate), date)
-  );
+export default function CalendarView({ selectedDate, onDateChange }: CalendarViewProps) {
+  const { tasks } = useTasks();
 
   return (
     <Calendar
       mode="single"
-      selected={date}
-      onSelect={setDate}
+      selected={selectedDate}
+      onSelect={(date) => onDateChange(date || new Date())}
       className="rounded-md border"
       components={{
-        DayContent: ({ date, ...props }) => {
+        DayContent: ({ date }) => {
           const tasksForDay = tasks.filter(
             (task) => task.dueDate && isSameDay(new Date(task.dueDate), date)
           );
@@ -34,7 +34,12 @@ export default function CalendarView() {
             return (
               <Popover>
                 <PopoverTrigger asChild>
-                  <div className="relative h-full w-full">
+                  <div
+                    className={cn(
+                      "relative flex items-center justify-center h-full w-full",
+                      isSameDay(date, new Date()) && "font-bold"
+                    )}
+                  >
                     <span>{format(date, "d")}</span>
                     <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-1">
                       {tasksForDay.slice(0, 3).map((task) => (
@@ -78,7 +83,16 @@ export default function CalendarView() {
               </Popover>
             );
           }
-          return <span>{format(date, "d")}</span>;
+          return (
+            <div
+              className={cn(
+                "relative flex items-center justify-center h-full w-full",
+                isSameDay(date, new Date()) && "font-bold"
+              )}
+            >
+              {format(date, "d")}
+            </div>
+          );
         },
       }}
     />
