@@ -103,7 +103,7 @@ export default function TaskForm({
     day?: Date
   ) => {
     if (day && currentValue && day.getTime() === currentValue.getTime()) {
-      onChange(null); // Deselect if the same day is clicked again
+      onChange(null);
     } else {
       onChange(day);
     }
@@ -173,11 +173,13 @@ export default function TaskForm({
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
+                            <span className="truncate">
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </span>
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
