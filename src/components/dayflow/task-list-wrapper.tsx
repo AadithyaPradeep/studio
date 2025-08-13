@@ -85,7 +85,7 @@ export default function TaskListWrapper() {
   }
 
   return (
-      <div className="max-w-4xl mx-auto">
+      <div>
         <DayflowHeader 
             onTaskCreate={handleAddTask}
             previousTaskTitles={previousTaskTitles}
