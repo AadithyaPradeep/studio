@@ -97,6 +97,18 @@ export default function TaskForm({
     }
   };
 
+  const handleDateSelect = (
+    currentValue: Date | null,
+    onChange: (...event: any[]) => void,
+    day?: Date
+  ) => {
+    if (day && currentValue && day.getTime() === currentValue.getTime()) {
+      onChange(null); // Deselect if the same day is clicked again
+    } else {
+      onChange(day);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -119,7 +131,7 @@ export default function TaskForm({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="category"
@@ -173,7 +185,7 @@ export default function TaskForm({
                         <Calendar
                           mode="single"
                           selected={field.value ?? undefined}
-                          onSelect={field.onChange}
+                          onSelect={(day) => handleDateSelect(field.value, field.onChange, day)}
                           initialFocus
                         />
                       </PopoverContent>
